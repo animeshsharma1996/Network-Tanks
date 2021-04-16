@@ -1,22 +1,36 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Networking;
 
-public class TankController : MonoBehaviour {
-	public float MoveSpeed = 150.0f;
-	public float RotateSpeed = 3.0f;
+[System.Obsolete]
+public class TankController : NetworkBehaviour 
+{
+	[SerializeField] private float MoveSpeed = 150.0f;
+	[SerializeField] private float RotateSpeed = 3.0f;
+	[SerializeField] private Color localPlayerColor = Color.white;
 
-	// Use this for initialization
-	void Start () {
-	
+	private void Start () 
+	{
+		
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		var x = Input.GetAxis("Horizontal") * Time.deltaTime * MoveSpeed;
-		var z = Input.GetAxis("Vertical") * Time.deltaTime * RotateSpeed;
+
+	public override void OnStartLocalPlayer()
+    {
+		MeshRenderer[] tankParts = GetComponentsInChildren<MeshRenderer>();
+
+		foreach(MeshRenderer tankPart in tankParts)
+        {
+			tankPart.material.color = localPlayerColor;
+        }
+    }
+
+	private void Update () 
+	{
+		if (!isLocalPlayer) { return; }
+
+		float x = Input.GetAxis("Horizontal") * Time.deltaTime * MoveSpeed;
+		float z = Input.GetAxis("Vertical") * Time.deltaTime * RotateSpeed;
 
 		transform.Rotate(0, x, 0);
 		transform.Translate(0, 0, z);
-
 	}
 }
