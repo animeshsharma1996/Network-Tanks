@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 [System.Obsolete]
@@ -8,12 +9,34 @@ public class TankController : NetworkBehaviour
 	[SerializeField] private float RotateSpeed = 3.0f;
 	[SerializeField] private Color localPlayerColor = Color.white;
 
-	private void Start () 
-	{
-		
-	}
+	[SerializeField] private GameObject shotPrefab;
+	[SerializeField] private Transform shotSpawnTransform;
+	[SerializeField] private float shotSpeed = 0.0f;
+	[SerializeField] private float reloadRate = 0.5f;
+	[SerializeField] private int poolSize = 0;
 
-	public override void OnStartLocalPlayer()
+	private List<GameObject> shotPool = new List<GameObject>();
+	private List<Rigidbody> rigidbodyShotPool = new List<Rigidbody>();
+	private int shotCounter = 0;
+	private float nextShotTime;
+
+	private void Start ()
+    {
+        CreateShotPool();
+    }
+
+    private void CreateShotPool()
+    {
+        for (int i = 0; i < poolSize; ++i)
+        {
+            GameObject shotBullet = Instantiate(shotPrefab, shotSpawnTransform.position, Quaternion.identity);
+            shotPool.Add(shotBullet);
+			rigidbodyShotPool.Add(shotBullet.GetComponent<Rigidbody>());
+            shotBullet.SetActive(false);
+        }
+    }
+
+    public override void OnStartLocalPlayer()
     {
 		MeshRenderer[] tankParts = GetComponentsInChildren<MeshRenderer>();
 
@@ -32,5 +55,35 @@ public class TankController : NetworkBehaviour
 
 		transform.Rotate(0, x, 0);
 		transform.Translate(0, 0, z);
+
+		if(Input.GetKeyDown(KeyCode.Space) && Time.time > nextShotTime)
+        {
+			nextShotTime = Time.time + reloadRate;
+			if(shotCounter < poolSize)
+            {
+                ShootProjectile();
+            }
+            else
+            {
+                shotCounter = 0;
+                ResetShotProjectPool();
+                ShootProjectile();
+            }
+        }
 	}
+
+    private void ResetShotProjectPool()
+    {
+        foreach (GameObject shotProjectile in shotPool)
+        {
+            shotProjectile.transform.position = shotSpawnTransform.position;
+        }
+    }
+
+    private void ShootProjectile()
+    {
+        shotPool[shotCounter].SetActive(true);
+        rigidbodyShotPool[shotCounter].velocity = transform.forward * shotSpeed;
+        ++shotCounter;
+    }
 }

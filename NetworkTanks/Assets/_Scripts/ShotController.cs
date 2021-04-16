@@ -6,8 +6,11 @@ public class ShotController : MonoBehaviour
 {
     [SerializeField] private float defaultDeathTime = 2.0f;
 
+    private Rigidbody shotRigidbody;
+
     private void Start()
     {
+        shotRigidbody = GetComponent<Rigidbody>();
         StartCoroutine(DisableShot(defaultDeathTime));
     }
 
@@ -24,6 +27,7 @@ public class ShotController : MonoBehaviour
     private IEnumerator DisableShot(float time)
     {
         yield return new WaitForSeconds(time);
+        shotRigidbody.velocity = Vector3.zero;
         gameObject.SetActive(false);
     }
 }
