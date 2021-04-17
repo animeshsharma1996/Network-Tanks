@@ -22,16 +22,18 @@ public class TankController : NetworkBehaviour
 
 	private void Start ()
     {
-        CreateShotPool();
+        CmdCreateShotPool();
     }
 
-    private void CreateShotPool()
+    [Command]
+    private void CmdCreateShotPool()
     {
         for (int i = 0; i < poolSize; ++i)
         {
             GameObject shotBullet = Instantiate(shotPrefab, shotSpawnTransform.position, Quaternion.identity);
             shotPool.Add(shotBullet);
 			rigidbodyShotPool.Add(shotBullet.GetComponent<Rigidbody>());
+            NetworkServer.Spawn(shotPool[shotCounter]);
             shotBullet.SetActive(false);
         }
     }
@@ -58,19 +60,24 @@ public class TankController : NetworkBehaviour
 
 		if(Input.GetKeyDown(KeyCode.Space) && Time.time > nextShotTime)
         {
-			nextShotTime = Time.time + reloadRate;
-			if(shotCounter < poolSize)
-            {
-                ShootProjectile();
-            }
-            else
-            {
-                shotCounter = 0;
-                ResetShotProjectPool();
-                ShootProjectile();
-            }
+            Fire();
         }
-	}
+    }
+
+    private void Fire()
+    {
+        nextShotTime = Time.time + reloadRate;
+        if (shotCounter < poolSize)
+        {
+            ShootProjectile();
+        }
+        else
+        {
+            shotCounter = 0;
+            ResetShotProjectPool();
+            ShootProjectile();
+        }
+    }
 
     private void ResetShotProjectPool()
     {
