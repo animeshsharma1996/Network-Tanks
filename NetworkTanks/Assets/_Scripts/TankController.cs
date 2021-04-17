@@ -32,9 +32,9 @@ public class TankController : NetworkBehaviour
         {
             GameObject shotBullet = Instantiate(shotPrefab, shotSpawnTransform.position, Quaternion.identity);
             shotPool.Add(shotBullet);
-			rigidbodyShotPool.Add(shotBullet.GetComponent<Rigidbody>());
-            NetworkServer.Spawn(shotPool[shotCounter]);
+            rigidbodyShotPool.Add(shotBullet.GetComponent<Rigidbody>());
             shotBullet.SetActive(false);
+            NetworkServer.Spawn(shotBullet);
         }
     }
 
@@ -52,8 +52,8 @@ public class TankController : NetworkBehaviour
 	{
 		if (!isLocalPlayer) { return; }
 
-		float x = Input.GetAxis("Horizontal") * Time.deltaTime * MoveSpeed;
-		float z = Input.GetAxis("Vertical") * Time.deltaTime * RotateSpeed;
+		float x = Input.GetAxis("Horizontal") * Time.deltaTime * RotateSpeed;
+		float z = Input.GetAxis("Vertical") * Time.deltaTime * MoveSpeed;
 
 		transform.Rotate(0, x, 0);
 		transform.Translate(0, 0, z);
