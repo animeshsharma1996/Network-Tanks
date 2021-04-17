@@ -11,9 +11,11 @@ public class Health : NetworkBehaviour
     [SerializeField] private int currentHealth = 0;
     [SerializeField] private TMP_Text healthScore = null;
 
-    // Start is called before the first frame update
+    private NetworkStartPosition[] spawnPoints = null;
+
     private void Start()
     {
+        spawnPoints = FindObjectsOfType<NetworkStartPosition>();
         healthScore.text = currentHealth.ToString();
     }
 
@@ -43,7 +45,8 @@ public class Health : NetworkBehaviour
     {
         if(isLocalPlayer)
         {
-            transform.position = Vector3.zero;
+            int chosenPoint = Random.Range(0,spawnPoints.Length);
+            transform.position = spawnPoints[chosenPoint].transform.position;
         }
     }
 }
