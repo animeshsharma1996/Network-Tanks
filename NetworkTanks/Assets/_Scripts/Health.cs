@@ -1,9 +1,13 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class Health : MonoBehaviour
+[System.Obsolete]
+public class Health : NetworkBehaviour
 {
     [SerializeField] private int maxHealth = 0;
+
+    [SyncVar(hook = "OnHealthChanged")]
     [SerializeField] private int currentHealth = 0;
     [SerializeField] private TMP_Text healthScore = null;
 
@@ -15,6 +19,8 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if(!isServer)  {  return;  }
+
         int newHealth = currentHealth - damage;
         if(newHealth <= 0)
         {
@@ -23,7 +29,11 @@ public class Health : MonoBehaviour
         else
         {
             currentHealth = newHealth;
-            healthScore.text = currentHealth.ToString();
         }
+    }
+
+    private void OnHealthChanged(int updatedHealth)
+    {
+        healthScore.text = updatedHealth.ToString();
     }
 }

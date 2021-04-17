@@ -60,11 +60,12 @@ public class TankController : NetworkBehaviour
 
 		if(Input.GetKeyDown(KeyCode.Space) && Time.time > nextShotTime)
         {
-            Fire();
+            CmdFire();
         }
     }
 
-    private void Fire()
+    [Command]
+    private void CmdFire()
     {
         nextShotTime = Time.time + reloadRate;
         if (shotCounter < poolSize)
