@@ -60,23 +60,23 @@ public class TankController : NetworkBehaviour
 
 		if(Input.GetKeyDown(KeyCode.Space) && Time.time > nextShotTime)
         {
-            CmdFire();
+            Fire();
         }
     }
 
-    [Command]
-    private void CmdFire()
+    
+    private void Fire()
     {
         nextShotTime = Time.time + reloadRate;
         if (shotCounter < poolSize)
         {
-            ShootProjectile();
+            CmdShootProjectile();
         }
         else
         {
             shotCounter = 0;
             ResetShotProjectPool();
-            ShootProjectile();
+            CmdShootProjectile();
         }
     }
 
@@ -88,7 +88,8 @@ public class TankController : NetworkBehaviour
         }
     }
 
-    private void ShootProjectile()
+    [Command]
+    private void CmdShootProjectile()
     {
         shotPool[shotCounter].SetActive(true);
         rigidbodyShotPool[shotCounter].velocity = transform.forward * shotSpeed;

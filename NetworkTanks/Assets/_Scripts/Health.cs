@@ -24,7 +24,8 @@ public class Health : NetworkBehaviour
         int newHealth = currentHealth - damage;
         if(newHealth <= 0)
         {
-            Debug.Log("Dead");
+            currentHealth = maxHealth;
+            RpcDeath();
         }
         else
         {
@@ -35,5 +36,14 @@ public class Health : NetworkBehaviour
     private void OnHealthChanged(int updatedHealth)
     {
         healthScore.text = updatedHealth.ToString();
+    }
+
+    [ClientRpc]
+    private void RpcDeath()
+    {
+        if(isLocalPlayer)
+        {
+            transform.position = Vector3.zero;
+        }
     }
 }
