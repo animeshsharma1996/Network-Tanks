@@ -1,8 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class ShotController : MonoBehaviour
+[System.Obsolete]
+public class ShotController : NetworkBehaviour
 {
     [SerializeField] private float defaultDeathTime = 2.0f;
 
@@ -17,11 +18,6 @@ public class ShotController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         gameObject.SetActive(false);
-    }
-
-    private void Update()
-    {
-        
     }
 
     private IEnumerator DisableShot(float time)

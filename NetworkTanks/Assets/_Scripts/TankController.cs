@@ -93,4 +93,20 @@ public class TankController : NetworkBehaviour
         rigidbodyShotPool[shotCounter].velocity = transform.forward * shotSpeed;
         ++shotCounter;
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject other = collision.gameObject;
+        try
+        {
+            CauseDamage causeDamageScript = other.GetComponent<CauseDamage>();
+            int totalDamage = causeDamageScript.GetDamage();
+            Health healthScript = GetComponent<Health>();
+            healthScript.TakeDamage(totalDamage);
+        }
+        catch
+        {
+            Debug.Log("Somthing hit us but didn't do any damage");
+        }
+    }
 }
