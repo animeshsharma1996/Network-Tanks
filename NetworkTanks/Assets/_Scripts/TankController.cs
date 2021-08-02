@@ -20,8 +20,9 @@ public class TankController : NetworkBehaviour
 	private int shotCounter = 0;
 	private float nextShotTime;
 
-	private void Start ()
+	private void Start()
     {
+        shotCounter = 0;
         CmdCreateShotPool();
     }
 
@@ -33,8 +34,8 @@ public class TankController : NetworkBehaviour
             GameObject shotBullet = Instantiate(shotPrefab, shotSpawnTransform.position, Quaternion.identity);
             shotPool.Add(shotBullet);
             rigidbodyShotPool.Add(shotBullet.GetComponent<Rigidbody>());
-            shotBullet.SetActive(false);
             NetworkServer.Spawn(shotBullet);
+            shotBullet.SetActive(false);
         }
     }
 
@@ -68,6 +69,7 @@ public class TankController : NetworkBehaviour
     private void Fire()
     {
         nextShotTime = Time.time + reloadRate;
+        Debug.Log(shotCounter);
         if (shotCounter < poolSize)
         {
             CmdShootProjectile();
@@ -80,20 +82,21 @@ public class TankController : NetworkBehaviour
         }
     }
 
+    [Command]
+    private void CmdShootProjectile()
+    {
+        shotPool[shotCounter].SetActive(true);
+        shotPool[shotCounter].transform.position = shotSpawnTransform.position;
+        rigidbodyShotPool[shotCounter].velocity = transform.forward * shotSpeed;
+        ++shotCounter;
+    }
+
     private void ResetShotProjectPool()
     {
         foreach (GameObject shotProjectile in shotPool)
         {
             shotProjectile.transform.position = shotSpawnTransform.position;
         }
-    }
-
-    [Command]
-    private void CmdShootProjectile()
-    {
-        shotPool[shotCounter].SetActive(true);
-        rigidbodyShotPool[shotCounter].velocity = transform.forward * shotSpeed;
-        ++shotCounter;
     }
 
     private void OnCollisionEnter(Collision collision)
